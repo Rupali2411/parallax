@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Parallax Vertical Slider</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        section {
+            padding: 4rem 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: #2c3e50;
+        }
+
+        .section-description {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 3rem;
+        }
+
+        /* Slider Section */
+        .slider-section {
+            background-color: #1a1a1a;
+            padding: 3rem 0;
+            position: relative;
+        }
+
+        .slider-container {
+            height: 80vh;
+            min-height: 600px;
+            display: block;
+            position: relative;
+            overflow: hidden;
+            margin: 0 auto;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            opacity: 0;
+            transition: all 1.5s ease;
+        }
+        
+        /* Different slide animations based on direction */
+        .slide[data-direction="bottom"] {
+            transform: translateY(100%);
+        }
+        
+        .slide[data-direction="left"] {
+            transform: translateX(-100%);
+        }
+        
+        .slide[data-direction="right"] {
+            transform: translateX(100%);
+        }
+
+        .slide.active {
+            opacity: 1;
+            transform: translate(0, 0);
+        }
+        
+        /* Previous slide animations based on direction */
+        .slide.prev-bottom {
+            opacity: 0;
+            transform: translateY(-100%);
+        }
+        
+        .slide.prev-left {
+            opacity: 0;
+            transform: translateX(100%);
+        }
+        
+        .slide.prev-right {
+            opacity: 0;
+            transform: translateX(-100%);
+        }
+
+        .slide-content {
+            width: 90%;
+            max-width: 1100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: white;
+            z-index: 10;
+            position: relative;
+            height: 100%;
+            padding: 30px 0;
+        }
+
+        .images-row {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-bottom: 30px;
+            gap: 20px;
+            position: relative;
+        }
+
+        /* Default animation for image containers */
+        .image-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transition: all 1.5s ease;
+        }
+
+        .image-container:nth-child(1) {
+            transition-delay: 0.3s;
+        }
+
+        .image-container:nth-child(2) {
+            transition-delay: 0.6s;
+        }
+
+        /* Content animation variations */
+        /* From Bottom */
+        .slide[data-content-direction="bottom"] .images-row .image-container {
+            transform: translateY(50px);
+        }
+
+        .slide[data-content-direction="bottom"] .text-content {
+            transform: translateY(50px);
+        }
+
+        /* From Left */
+        .slide[data-content-direction="left"] .images-row .image-container {
+            transform: translateX(-100px);
+        }
+
+        .slide[data-content-direction="left"] .text-content {
+            transform: translateX(-100px);
+        }
+
+        /* From Right */
+        .slide[data-content-direction="right"] .images-row .image-container {
+            transform: translateX(100px);
+        }
+
+        .slide[data-content-direction="right"] .text-content {
+            transform: translateX(100px);
+        }
+
+        /* Active animations */
+        .active .image-container {
+            transform: translate(0, 0) !important;
+            opacity: 1;
+        }
+
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            transform: scale(1.2);
+            transition: all 2s ease;
+        }
+
+        .active .image-container img {
+            transform: scale(1);
+        }
+
+        .text-content {
+            width: 75%;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            opacity: 0;
+            transition: all 1.5s ease 0.9s;
+        }
+
+        .active .text-content {
+            transform: translate(0, 0) !important;
+            opacity: 1;
+        }
+
+        .text-content h2 {
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+
+        .text-content p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        .slide-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.3;
+            filter: blur(2px);
+            transform: scale(1.2);
+        }
+
+        .navigation {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .nav-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-dot.active {
+            background-color: white;
+            transform: scale(1.3);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            transform: translateY(20px);
+            opacity: 0;
+        }
+
+        .active .btn {
+            transform: translateY(0);
+            opacity: 1;
+            transition-delay: 1.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Scroll lock indicator */
+        .scroll-lock-indicator {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .scroll-lock-indicator.show {
+            opacity: 1;
+        }
+
+        /* Slide indicator */
+        .slide-indicator {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 14px;
+            z-index: 100;
+        }
+
+        /* Other Sections */
+        .feature-section {
+            background-color: white;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .feature-item {
+            padding: 30px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .feature-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: #6e8efb;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        footer {
+            background-color: #2c3e50;
+            color: white;
+            padding: 3rem 0;
+            text-align: center;
+        }
+
+        @media (max-width: 992px) {
+            .feature-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .image-container {
+                height: 30vh;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .images-row {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .image-container {
+                width: 100%;
+                height: 25vh;
+            }
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+            .slider-container {
+                height: 90vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <header>
+        <div class="container">
+            <h1>Welcome to Our Website</h1>
+            <p>Discover amazing experiences and destinations with our innovative services</p>
+        </div>
+    </header>
+
+    <!-- Introduction Section -->
+    <section>
+        <div class="container text-center">
+            <h2 class="section-title">Why Choose Us</h2>
+            <p class="section-description">We provide exceptional services tailored to your needs. Our team of experts is dedicated to delivering outstanding results with attention to every detail.</p>
+        </div>
+    </section>
+
+    <!-- Parallax Slider Section -->
+    <section class="slider-section">
+        <div class="container">          
+            <div class="slider-container">
+                <!-- Slide indicator -->
+                <div class="slide-indicator">Slide <span id="current-slide">1</span> of <span id="total-slides">3</span></div>
+                
+                <!-- Slide 1 - From Bottom -->
+                <div class="slide active" data-index="0" data-direction="bottom" data-content-direction="bottom">
+                    <img src="/api/placeholder/1920/1080" alt="Background" class="slide-bg">
+                    <div class="slide-content">
+                        <div class="images-row">
+                            <div class="image-container">
+                                <img src="slider assets/vertical-3.2.png" alt="Destination 1">
+                            </div>
+                            <div class="image-container">
+                                <img src="slider assets/vertical-3.2.png" alt="Destination 2">
+                            </div>
+                        </div>
+                        <div class="text-content">
+                            <p>Explore breathtaking locations around the world. Our curated collection of travel destinations will inspire your next adventure and create memories that last a lifetime.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 2 - From Left -->
+                <div class="slide" data-index="1" data-direction="left" data-content-direction="left">
+                    <img src="/api/placeholder/1920/1080" alt="Background" class="slide-bg">
+                    <div class="slide-content">
+                        <div class="images-row">
+                            <div class="image-container">
+                                <img src="slider assets/vertical-3.2.png" alt="Experience 1">
+                            </div>
+                            <div class="image-container">
+                                <img src="slider assets/vertical-3.2.png" alt="Experience 2">
+                            </div>
+                        </div>
+                        <div class="text-content">
+                            <p>Dive into local cultures and traditions. Our immersive travel experiences connect you with authentic moments and unforgettable encounters with local communities.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 3 - From Right -->
+                <div class="slide" data-index="2" data-direction="right" data-content-direction="right">
+                    <img src="/api/placeholder/1920/1080" alt="Background" class="slide-bg">
+                    <div class="slide-content">
+                        <div class="images-row">
+                            <div class="image-container">
+                                <img src="slider assets/vertical-3.2.png" alt="Accommodation 1">
+                            </div>
+                            <div class="image-container">
+                                <img src="slider assets/vertical-3.2.png" alt="Accommodation 2">
+                            </div>
+                        </div>
+                        <div class="text-content">
+                            <p>Rest in style and comfort. Our selection of premium accommodations ranges from boutique hotels to luxury villas, ensuring a perfect stay during your journey.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Dots -->
+                <div class="navigation">
+                    <div class="nav-dot active" data-index="0"></div>
+                    <div class="nav-dot" data-index="1"></div>
+                    <div class="nav-dot" data-index="2"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="feature-section">
+        <div class="container text-center">
+            <h2 class="section-title">Our Services</h2>
+            <p class="section-description">We offer a wide range of premium services to meet your expectations</p>
+            
+            <div class="feature-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">🌟</div>
+                    <h3 class="feature-title">Personalized Planning</h3>
+                    <p>Custom itineraries designed just for you, taking into account your preferences and interests.</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🔒</div>
+                    <h3 class="feature-title">Secure Bookings</h3>
+                    <p>Guaranteed reservations with our trusted partners worldwide for peace of mind.</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🛎️</div>
+                    <h3 class="feature-title">24/7 Support</h3>
+                    <p>Round-the-clock assistance from our dedicated team throughout your journey.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Your Company. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Scroll lock indicator -->
+    <div class="scroll-lock-indicator">Viewing slider - scroll to navigate</div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const slides = document.querySelectorAll('.slide');
+            const dots = document.querySelectorAll('.nav-dot');
+            const sliderContainer = document.querySelector('.slider-container');
+            const sliderSection = document.querySelector('.slider-section');
+            const scrollLockIndicator = document.querySelector('.scroll-lock-indicator');
+            const currentSlideEl = document.getElementById('current-slide');
+            const totalSlidesEl = document.getElementById('total-slides');
+            
+            let currentSlide = 0;
+            let isAnimating = false;
+            let touchStartY = 0;
+            let touchEndY = 0;
+            let isInViewport = false;
+            let isScrollLocked = false;
+            
+            // Set total slides
+            totalSlidesEl.textContent = slides.length;
+            
+            // Initialize the slider
+            function initSlider() {
+                // Set the first slide as active
+                slides[0].classList.add('active');
+                
+                // Add click events to navigation dots
+                dots.forEach(dot => {
+                    dot.addEventListener('click', function() {
+                        if (isAnimating) return;
+                        const slideIndex = parseInt(this.getAttribute('data-index'));
+                        if (slideIndex !== currentSlide) {
+                            goToSlide(slideIndex);
+                        }
+                    });
+                });
+                
+                // Add scroll event to check when slider is in view
+                window.addEventListener('scroll', checkSliderPosition);
+                
+                // Add wheel event for mouse scroll
+                sliderContainer.addEventListener('wheel', handleWheel, { passive: false });
+                
+                // Add touch events for mobile
+                sliderContainer.addEventListener('touchstart', handleTouchStart, { passive: false });
+                sliderContainer.addEventListener('touchmove', handleTouchMove, { passive: false });
+                sliderContainer.addEventListener('touchend', handleTouchEnd);
+                
+                // Add keyboard navigation
+                document.addEventListener('keydown', handleKeydown);
+                
+                // Check initial position
+                checkSliderPosition();
+            }
+            
+            // Check slider position relative to viewport
+            function checkSliderPosition() {
+                const rect = sliderSection.getBoundingClientRect();
+                const sliderTop = rect.top;
+                const sliderBottom = rect.bottom;
+                const viewportHeight = window.innerHeight;
+                
+                // Check if slider is in view
+                isInViewport = !(sliderBottom <= 0 || sliderTop >= viewportHeight);
+                
+                // Check if slider is fully in view
+                if (sliderTop <= 0 && sliderBottom >= viewportHeight) {
+                    // Slider is fully in view - lock scrolling
+                    if (!isScrollLocked) {
+                        lockScroll();
+                    }
+                } else if (sliderBottom <= 0 || sliderTop >= viewportHeight) {
+                    // Slider is not in view - unlock scrolling
+                    if (isScrollLocked) {
+                        unlockScroll();
+                    }
+                }
+                
+                // Check if we've reached the last slide
+                if (currentSlide === slides.length - 1 && sliderBottom <= viewportHeight * 0.8) {
+                    // Near bottom of last slide - unlock scrolling
+                    if (isScrollLocked) {
+                        unlockScroll();
+                    }
+                }
+            }
+            
+            // Lock page scrolling
+            function lockScroll() {
+                isScrollLocked = true;
+                document.body.style.overflow = 'hidden';
+                scrollLockIndicator.classList.add('show');
+                
+                // Show indicator temporarily
+                setTimeout(() => {
+                    scrollLockIndicator.classList.remove('show');
+                }, 2000);
+            }
+            
+            // Unlock page scrolling
+            function unlockScroll() {
+                isScrollLocked = false;
+                document.body.style.overflow = '';
+                scrollLockIndicator.classList.remove('show');
+            }
+            
+            // Handle mouse wheel event
+            function handleWheel(e) {
+                if (isAnimating || !isInViewport) return;
+                
+                // Prevent default scrolling when slider is locked
+                if (isScrollLocked) {
+                    e.preventDefault();
+                    
+                    if (e.deltaY > 0) {
+                        // Scroll down - next slide
+                        if (currentSlide < slides.length - 1) {
+                            goToSlide(currentSlide + 1);
+                        } else {
+                            // On last slide - allow small scroll before unlocking
+                            if (window.scrollY + window.innerHeight < document.body.scrollHeight - 100) {
+                                unlockScroll();
+                            }
+                        }
+                    } else {
+                        // Scroll up - previous slide
+                        if (currentSlide > 0) {
+                            goToSlide(currentSlide - 1);
+                        } else {
+                            // On first slide - allow small scroll before unlocking
+                            if (window.scrollY > 100) {
+                                unlockScroll();
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Handle touch start
+            function handleTouchStart(e) {
+                touchStartY = e.touches[0].clientY;
+            }
+            
+            // Handle touch move
+            function handleTouchMove(e) {
+                if (isScrollLocked && isInViewport) {
+                    // Prevent page scrolling when slider is locked
+                    e.preventDefault();
+                    touchEndY = e.touches[0].clientY;
+                }
+            }
+            
+            // Handle touch end
+            function handleTouchEnd() {
+                if (isAnimating || !isScrollLocked || !isInViewport) return;
+                
+                const touchDiff = touchStartY - touchEndY;
+                
+                // If the touch difference is significant enough
+                if (Math.abs(touchDiff) > 50) {
+                    if (touchDiff > 0) {
+                        // Swipe up - next slide
+                        if (currentSlide < slides.length - 1) {
+                            goToSlide(currentSlide + 1);
+                        } else {
+                            // On last slide - unlock
+                            unlockScroll();
+                        }
+                    } else {
+                        // Swipe down - previous slide
+                        if (currentSlide > 0) {
+                            goToSlide(currentSlide - 1);
+                        } else {
+                            // On first slide - unlock
+                            unlockScroll();
+                        }
+                    }
+                }
+            }
+            
+            // Handle keyboard navigation
+            function handleKeydown(e) {
+                if (isAnimating || !isInViewport) return;
+                
+                if (isScrollLocked) {
+                    if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+                        // Next slide
+                        if (currentSlide < slides.length - 1) {
+                            goToSlide(currentSlide + 1);
+                            e.preventDefault();
+                        }
+                    } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+                        // Previous slide
+                        if (currentSlide > 0) {
+                            goToSlide(currentSlide - 1);
+                            e.preventDefault();
+                        }
+                    }
+                }
+            }
+            
+            // Go to a specific slide
+            function goToSlide(index) {
+                if (index === currentSlide || isAnimating) return;
+                
+                isAnimating = true;
+                
+                // Update slide indicator
+                currentSlideEl.textContent = index + 1;
+                
+                // Update nav dots
+                dots.forEach(dot => dot.classList.remove('active'));
+                dots[index].classList.add('active');
+                
+                // Update slides
+                if (index > currentSlide) {
+                    // Going down
+                    slides[currentSlide].classList.remove('active');
+                    slides[currentSlide].classList.add('prev');
+                    slides[index].classList.add('active');
+                } else {
+                    // Going up
+                    slides[currentSlide].classList.remove('active');
+                    slides[index].classList.remove('prev');
+                    slides[index].classList.add('active');
+                }
+                
+                // Update current slide index
+                currentSlide = index;
+                
+                // Reset animation lock after transition completes
+                setTimeout(() => {
+                    isAnimating = false;
+                    
+                    // Clean up classes for slides that are not active
+                    slides.forEach((slide, i) => {
+                        if (i !== currentSlide) {
+                            if (i < currentSlide) {
+                                slide.classList.add('prev');
+                                slide.classList.remove('active');
+                            } else {
+                                slide.classList.remove('prev');
+                                slide.classList.remove('active');
+                            }
+                        }
+                    });
+                    
+                    // Check if we need to unlock scrolling (reached last slide)
+                    if (currentSlide === slides.length - 1) {
+                        const rect = sliderSection.getBoundingClientRect();
+                        if (rect.bottom <= window.innerHeight * 0.8) {
+                            unlockScroll();
+                        }
+                    }
+                }, 1500);
+            }
+            
+            // Initialize the slider
+            initSlider();
+        });
+    </script>
+</body>
+</html>
